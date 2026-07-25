@@ -14,6 +14,7 @@ function App() {
     year_level: "",
     email: ""
   });
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -24,12 +25,35 @@ function App() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/students",
-        formData
-      );
 
-      setStudents([...students, response.data]);
+      if (selectedStudent) {
+
+        const response = await axios.put(
+          `http://localhost:5000/students/${selectedStudent.id}`,
+          formData
+        );
+
+        setStudents(
+          students.map((student) =>
+            student.id === selectedStudent.id
+              ? response.data
+              : student
+          )
+        );
+
+        alert("Student updated successfully");
+
+      } else {
+
+        const response = await axios.post(
+          "http://localhost:5000/students",
+          formData
+        );
+
+        setStudents([...students, response.data]);
+
+        alert("Student added successfully");
+      }
 
       setFormData({
         student_number: "",
@@ -40,11 +64,11 @@ function App() {
         email: ""
       });
 
-      alert("Student added successfully");
+      setSelectedStudent(null);
 
     } catch (error) {
       console.error(error);
-      alert("Failed to add student");
+      alert("Failed to save student");
     }
   };
   const handleDelete = async (id) => {
@@ -66,6 +90,20 @@ function App() {
       console.error(error);
       alert("Failed to delete student");
     }
+  };
+  const handleEdit = (student) => {
+
+    setSelectedStudent(student);
+
+    setFormData({
+      student_number: student.student_number,
+      first_name: student.first_name,
+      last_name: student.last_name,
+      course: student.course,
+      year_level: student.year_level,
+      email: student.email
+    });
+
   };
 
   useEffect(() => {
@@ -133,7 +171,7 @@ function App() {
         />
 
         <button type="submit">
-          Add Student
+          {selectedStudent ? "Update Student" : "Add Student"}
         </button>
 
       </form>
@@ -162,6 +200,11 @@ function App() {
               <td>{student.year_level}</td>
               <td>{student.email}</td>
               <td>
+                <button
+                  onClick={() => handleEdit(student)}
+                >
+                  Edit
+                </button>
                 <button
                   onClick={() => handleDelete(student.id)}
                 >
