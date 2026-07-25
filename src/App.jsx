@@ -1,283 +1,139 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import "./App.css";
+import { useState } from "react";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
+
+import Dashboard from "./pages/Dashboard";
+import Students from "./pages/Students";
+import About from "./pages/About";
 
 function App() {
-
-  const [students, setStudents] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [formData, setFormData] = useState({
-    student_number: "",
-    first_name: "",
-    last_name: "",
-    course: "",
-    year_level: "",
-    email: ""
-  });
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-
-      if (selectedStudent) {
-
-        const response = await axios.put(
-          `http://localhost:5000/students/${selectedStudent.id}`,
-          formData
-        );
-
-        setStudents(
-          students.map((student) =>
-            student.id === selectedStudent.id
-              ? response.data
-              : student
-          )
-        );
-
-        alert("Student updated successfully");
-
-      } else {
-
-        const response = await axios.post(
-          "http://localhost:5000/students",
-          formData
-        );
-
-        setStudents([...students, response.data]);
-
-        alert("Student added successfully");
-      }
-
-      setFormData({
-        student_number: "",
-        first_name: "",
-        last_name: "",
-        course: "",
-        year_level: "",
-        email: ""
-      });
-
-      setSelectedStudent(null);
-
-    } catch (error) {
-      console.error(error);
-      alert("Failed to save student");
-    }
-  };
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this student?"
-    );
-
-    if (!confirmDelete) {
-      return;
-    }
-    try {
-
-      await axios.delete(
-        `http://localhost:5000/students/${id}`
-      );
-
-      setStudents(
-        students.filter(
-          (student) => student.id !== id
-        )
-      );
-
-      alert("Student deleted successfully");
-
-    } catch (error) {
-      console.error(error);
-      alert("Failed to delete student");
-    }
-  };
-  const handleEdit = (student) => {
-
-    setSelectedStudent(student);
-
-    setFormData({
-      student_number: student.student_number,
-      first_name: student.first_name,
-      last_name: student.last_name,
-      course: student.course,
-      year_level: student.year_level,
-      email: student.email
-    });
-
-  };
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/students")
-      .then((response) => {
-        setStudents(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
+  const navigate = useNavigate();
+  const [showMenu, setShowMenu] = useState(false);
   return (
-    <div className="container">
-      <h1 className="title">
-        Student Management System
-      </h1>
-      <input
-        type="text"
-        placeholder="Search student..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <select
-        value={sortBy}
-        onChange={(e) => setSortBy(e.target.value)}
-      >
-        <option value="">Sort By</option>
-        <option value="first_name">First Name</option>
-        <option value="course">Course</option>
-        <option value="year_level">Year Level</option>
-      </select>
-      <form
-        className="form-container"
-        onSubmit={handleSubmit}
-      >
-        <div className="form-grid">
-          <input
-            type="text"
-            name="student_number"
-            placeholder="Student Number"
-            value={formData.student_number}
-            onChange={handleChange}
-          />
+    <div className="layout">
 
-          <input
-            type="text"
-            name="first_name"
-            placeholder="First Name"
-            value={formData.first_name}
-            onChange={handleChange}
-          />
-
-          <input
-            type="text"
-            name="last_name"
-            placeholder="Last Name"
-            value={formData.last_name}
-            onChange={handleChange}
-          />
-
-          <input
-            type="text"
-            name="course"
-            placeholder="Course"
-            value={formData.course}
-            onChange={handleChange}
-          />
-
-          <input
-            type="number"
-            name="year_level"
-            placeholder="Year Level"
-            value={formData.year_level}
-            onChange={handleChange}
-          />
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-          />
+      <aside className="sidebar">
+        <div className="logo">
+          <h2>STUDENT MS</h2>
+          <p>Admin Panel</p>
         </div>
 
-        <button
-          className="submit-btn"
-          type="submit"
-        >
-          {selectedStudent ? "Update Student" : "Add Student"}
-        </button>
+        <NavLink to="/">
+          Dashboard
+        </NavLink>
 
-      </form>
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Student Number</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Course</th>
-              <th>Year Level</th>
-              <th>Email</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+        <NavLink to="/students">
+          Students
+        </NavLink>
 
-          <tbody>
-            {students
-              .filter((student) =>
-                student.first_name
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase()) ||
+        <NavLink to="/about">
+          About
+        </NavLink>
+      </aside>
 
-                student.last_name
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase()) ||
+      <main className="content">
 
-                student.student_number
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase()) ||
+        <div className="topbar">
 
-                student.course
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase())
-              )
-              .sort((a, b) => {
+          <div></div>
 
-                if (!sortBy) return 0;
+          <div className="user-menu">
 
-                return String(a[sortBy]).localeCompare(
-                  String(b[sortBy])
-                );
+            <button
+              className="user-btn"
+              onClick={() => setShowMenu(!showMenu)}
+            >
+              Admin ▼
+            </button>
 
-              })
-              .map((student) => (
-                <tr key={student.id}>
-                  <td>{student.id}</td>
-                  <td>{student.student_number}</td>
-                  <td>{student.first_name}</td>
-                  <td>{student.last_name}</td>
-                  <td>{student.course}</td>
-                  <td>{student.year_level}</td>
-                  <td>{student.email}</td>
-                  <td>
-                    <button
-                      className="action-btn edit-btn"
-                      onClick={() => handleEdit(student)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="action-btn delete-btn"
-                      onClick={() => handleDelete(student.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+            {showMenu && (
+              <div className="dropdown">
+
+                <button
+                  onClick={() => navigate("/profile")}
+                >
+                  Profile
+                </button>
+
+                <button
+                  onClick={() => navigate("/settings")}
+                >
+                  Settings
+                </button>
+
+                <button
+                  onClick={() => {
+
+                    localStorage.removeItem(
+                      "isLoggedIn"
+                    );
+
+                    navigate("/login");
+
+                  }}
+                >
+                  Logout
+                </button>
+
+              </div>
+            )}
+
+          </div>
+
+        </div>
+        <Routes>
+
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/students"
+            element={
+              <ProtectedRoute>
+                <Students />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/about"
+            element={<About />}
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={<Login />}
+          />
+
+        </Routes>
+
+      </main>
+
     </div>
   );
 }
