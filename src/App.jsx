@@ -3,15 +3,69 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  NavLink,
+  useNavigate,
+  useLocation
+} from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import About from "./pages/About";
 
 function App() {
+  const location = useLocation();
   const navigate = useNavigate();
+  const getPageTitle = () => {
+    switch (location.pathname) {
+
+      case "/":
+        return {
+          title: "Dashboard",
+          subtitle: "Overview of the system"
+        };
+
+      case "/students":
+        return {
+          title: "Students",
+          subtitle: "Manage student records"
+        };
+
+      case "/profile":
+        return {
+          title: "Profile",
+          subtitle: "Account information"
+        };
+
+      case "/settings":
+        return {
+          title: "Settings",
+          subtitle: "System preferences"
+        };
+
+      default:
+        return {
+          title: "Dashboard",
+          subtitle: "Overview of the system"
+        };
+    }
+  };
+  const pageInfo = getPageTitle();
   const [showMenu, setShowMenu] = useState(false);
+  const isLoginPage =
+    location.pathname === "/login";
+  if (isLoginPage) {
+    return (
+      <Routes>
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+      </Routes>
+    );
+  }
   return (
     <div className="layout">
 
@@ -38,7 +92,13 @@ function App() {
 
         <div className="topbar">
 
-          <div></div>
+          <div className="header-info">
+
+            <h2>{pageInfo.title}</h2>
+
+            <p>{pageInfo.subtitle}</p>
+
+          </div>
 
           <div className="user-menu">
 
@@ -46,26 +106,34 @@ function App() {
               className="user-btn"
               onClick={() => setShowMenu(!showMenu)}
             >
-              Admin ▼
+              👤 Admin {showMenu ? "▲" : "▼"}
             </button>
 
             {showMenu && (
               <div className="dropdown">
 
                 <button
-                  onClick={() => navigate("/profile")}
+                  onClick={() => {
+                    setShowMenu(false);
+                    navigate("/profile");
+                  }}
                 >
                   Profile
                 </button>
 
                 <button
-                  onClick={() => navigate("/settings")}
+                  onClick={() => {
+                    setShowMenu(false);
+                    navigate("/settings");
+                  }}
                 >
                   Settings
                 </button>
 
                 <button
                   onClick={() => {
+
+                    setShowMenu(false);
 
                     localStorage.removeItem(
                       "isLoggedIn"
@@ -106,7 +174,11 @@ function App() {
 
           <Route
             path="/about"
-            element={<About />}
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/profile"

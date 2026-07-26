@@ -33,13 +33,14 @@ function Dashboard() {
   return (
     <div>
 
-      <h1>Dashboard</h1>
+      <h1>Analytics Overview</h1>
 
       <div className="dashboard-cards">
 
         <div className="card">
           <h3>Total Students</h3>
           <h2>{totalStudents}</h2>
+          <p>Registered Students</p>
         </div>
 
         <div className="card">
@@ -58,8 +59,57 @@ function Dashboard() {
         </div>
 
       </div>
+      <div className="quick-actions-card">
+
+        <h3>Quick Actions</h3>
+
+        <div className="quick-actions-buttons">
+
+          <button>Add Student</button>
+
+          <button>Generate Report</button>
+
+          <button>Export Data</button>
+
+        </div>
+
+      </div>
+      <div className="recent-students-card">
+
+        <h3>Recent Students</h3>
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Course</th>
+              <th>Year</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td>John Doe</td>
+              <td>BSIT</td>
+              <td>3</td>
+            </tr>
+
+            <tr>
+              <td>Jane Smith</td>
+              <td>BSCS</td>
+              <td>2</td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
+
   );
 }
 

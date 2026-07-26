@@ -16,6 +16,7 @@ function Students() {
     email: ""
   });
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showForm, setShowForm] = useState(false);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -127,9 +128,6 @@ function Students() {
 
   return (
     <div className="container">
-      <h1 className="title">
-        Student Management System
-      </h1>
       <div className="controls">
         <input
           type="text"
@@ -147,6 +145,13 @@ function Students() {
           <option value="year_level">Year Level</option>
         </select>
       </div>
+      <button
+        className="add-student-btn"
+        onClick={() => setShowForm(!showForm)}
+      >
+        {showForm ? "Close Form" : "+ Add Student"}
+      </button>
+      {showForm && (
       <form
         className="form-container"
         onSubmit={handleSubmit}
@@ -207,8 +212,8 @@ function Students() {
         >
           {selectedStudent ? "Update Student" : "Add Student"}
         </button>
-
       </form>
+      )}
       <div className="table-container">
         <table>
           <thead>
