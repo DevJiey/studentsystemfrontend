@@ -13,7 +13,11 @@ import {
 
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
-import About from "./pages/About";
+import Courses from "./pages/Courses";
+import Teachers from "./pages/Teachers";
+import Classes from "./pages/Classes";
+import Attendance from "./pages/Attendance";
+import Grades from "./pages/Grades";
 
 function App() {
   const location = useLocation();
@@ -31,6 +35,31 @@ function App() {
         return {
           title: "Students",
           subtitle: "Manage student records"
+        };
+      case "/courses":
+        return {
+          title: "Courses",
+          subtitle: "Manage course offerings"
+        };
+      case "/teachers":
+        return {
+          title: "Teachers",
+          subtitle: "Manage teacher records"
+        };
+      case "/classes":
+        return {
+          title: "Classes",
+          subtitle: "Manage class schedules"
+        };
+      case "/attendance":
+        return {
+          title: "Attendance",
+          subtitle: "Manage attendance records"
+        };
+      case "/grades":
+        return {
+          title: "Grades",
+          subtitle: "Manage student grades"
         };
 
       case "/profile":
@@ -83,9 +112,26 @@ function App() {
           Students
         </NavLink>
 
-        <NavLink to="/about">
-          About
+        <NavLink to="/courses">
+          Courses
         </NavLink>
+
+        <NavLink to="/teachers">
+          Teachers
+        </NavLink>
+
+        <NavLink to="/classes">
+          Classes
+        </NavLink>
+
+        <NavLink to="/attendance">
+          Attendance
+        </NavLink>
+
+        <NavLink to="/grades">
+          Grades
+        </NavLink>
+
       </aside>
 
       <main className="content">
@@ -173,13 +219,50 @@ function App() {
           />
 
           <Route
-            path="/about"
+            path="/courses"
             element={
               <ProtectedRoute>
-                <About />
+                <Courses />
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/teachers"
+            element={
+              <ProtectedRoute>
+                <Teachers />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/classes"
+            element={
+              <ProtectedRoute>
+                <Classes />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/grades"
+            element={
+              <ProtectedRoute>
+                <Grades />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/attendance"
+            element={
+              <ProtectedRoute>
+                <Attendance />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/profile"
             element={

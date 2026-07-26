@@ -16,7 +16,6 @@ function Students() {
     email: ""
   });
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [showForm, setShowForm] = useState(false);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -28,34 +27,22 @@ function Students() {
 
     try {
 
-      if (selectedStudent) {
+      const response = await axios.put(
+        `http://localhost:5000/students/${selectedStudent.id}`,
+        formData
+      );
 
-        const response = await axios.put(
-          `http://localhost:5000/students/${selectedStudent.id}`,
-          formData
-        );
+      setStudents(
+        students.map((student) =>
+          student.id === selectedStudent.id
+            ? response.data
+            : student
+        )
+      );
 
-        setStudents(
-          students.map((student) =>
-            student.id === selectedStudent.id
-              ? response.data
-              : student
-          )
-        );
+      alert("Student updated successfully");
 
-        alert("Student updated successfully");
-
-      } else {
-
-        const response = await axios.post(
-          "http://localhost:5000/students",
-          formData
-        );
-
-        setStudents([...students, response.data]);
-
-        alert("Student added successfully");
-      }
+      setSelectedStudent(null);
 
       setFormData({
         student_number: "",
@@ -65,8 +52,6 @@ function Students() {
         year_level: "",
         email: ""
       });
-
-      setSelectedStudent(null);
 
     } catch (error) {
       console.error(error);
@@ -114,6 +99,18 @@ function Students() {
     });
 
   };
+  const handleCancelEdit = () => {
+    setSelectedStudent(null);
+
+    setFormData({
+      student_number: "",
+      first_name: "",
+      last_name: "",
+      course: "",
+      year_level: "",
+      email: ""
+    });
+  };
 
   useEffect(() => {
     axios
@@ -145,74 +142,75 @@ function Students() {
           <option value="year_level">Year Level</option>
         </select>
       </div>
-      <button
-        className="add-student-btn"
-        onClick={() => setShowForm(!showForm)}
-      >
-        {showForm ? "Close Form" : "+ Add Student"}
-      </button>
-      {showForm && (
-      <form
-        className="form-container"
-        onSubmit={handleSubmit}
-      >
-        <div className="form-grid">
-          <input
-            type="text"
-            name="student_number"
-            placeholder="Student Number"
-            value={formData.student_number}
-            onChange={handleChange}
-          />
-
-          <input
-            type="text"
-            name="first_name"
-            placeholder="First Name"
-            value={formData.first_name}
-            onChange={handleChange}
-          />
-
-          <input
-            type="text"
-            name="last_name"
-            placeholder="Last Name"
-            value={formData.last_name}
-            onChange={handleChange}
-          />
-
-          <input
-            type="text"
-            name="course"
-            placeholder="Course"
-            value={formData.course}
-            onChange={handleChange}
-          />
-
-          <input
-            type="number"
-            name="year_level"
-            placeholder="Year Level"
-            value={formData.year_level}
-            onChange={handleChange}
-          />
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button
-          className="submit-btn"
-          type="submit"
+      {selectedStudent && (
+        <form
+          className="form-container"
+          onSubmit={handleSubmit}
         >
-          {selectedStudent ? "Update Student" : "Add Student"}
-        </button>
-      </form>
+          <div className="form-grid">
+            <input
+              type="text"
+              name="student_number"
+              placeholder="Student Number"
+              value={formData.student_number}
+              onChange={handleChange}
+            />
+
+            <input
+              type="text"
+              name="first_name"
+              placeholder="First Name"
+              value={formData.first_name}
+              onChange={handleChange}
+            />
+
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
+              value={formData.last_name}
+              onChange={handleChange}
+            />
+
+            <input
+              type="text"
+              name="course"
+              placeholder="Course"
+              value={formData.course}
+              onChange={handleChange}
+            />
+
+            <input
+              type="number"
+              name="year_level"
+              placeholder="Year Level"
+              value={formData.year_level}
+              onChange={handleChange}
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button
+            className="submit-btn"
+            type="submit"
+          >
+            Update Student
+          </button>
+          <button
+            type="button"
+            className="submit-btn cancel-btn"
+            onClick={handleCancelEdit}
+          >
+            Cancel
+          </button>
+        </form>
       )}
       <div className="table-container">
         <table>
